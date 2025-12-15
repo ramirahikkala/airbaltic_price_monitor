@@ -87,21 +87,29 @@ class AirBalticPriceTracker:
                         browser.close()
                         return None
                     
-                    price_text = prices[0].text_content()
+                    # Etsii halvinta hintaa kaikista hinnoista
+                    min_price = None
+                    for price_element in prices:
+                        price_text = price_element.text_content().strip()
+                        
+                        # Parse hinta (158€ tai 245,00€ -> 245.00)
+                        match = re.search(r'(\d+)[.,]?(\d*)', price_text)
+                        if match:
+                            whole = match.group(1)
+                            decimal = match.group(2) if match.group(2) else "00"
+                            current_price = float(f"{whole}.{decimal}")
+                            
+                            if min_price is None or current_price < min_price:
+                                min_price = current_price
                     
-                    # Parse hinta (158€ tai 245,00€ -> 245.00)
-                    match = re.search(r'(\d+)[.,]?(\d*)', price_text)
-                    if match:
-                        whole = match.group(1)
-                        decimal = match.group(2) if match.group(2) else "00"
-                        price = float(f"{whole}.{decimal}")
-                    else:
-                        logger.error(f"Hinnan parsinta epäonnistui: {price_text}")
+                    if min_price is None:
+                        logger.error("Mitään kelpaavaa hintaa ei löydetty")
                         browser.close()
                         return None
                     
+                    price = min_price
                     browser.close()
-                    logger.info(f"Hinta: {price:.2f} EUR")
+                    logger.info(f"Halvin hinta: {price:.2f} EUR")
                     
                     return {
                         'price': round(price, 2),
