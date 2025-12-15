@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  airbaltic-price-tracker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: airbaltic-price-tracker
+    restart: unless-stopped
+    
+    # Environment variables (optional)
+    environment:
+      - TZ=Europe/Helsinki
+    
+    # Volume mounts for persistent data
+    volumes:
+      # Config file - mount your config.json here
+      - ./config.json:/app/config.json:ro
+      
+      # Data persistence
+      - ./data:/app/data
+      - airbaltic-logs:/app/logs
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # Resource limits (optional)
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.5'
+    #       memory: 512M
+    #     reservations:
+    #       cpus: '0.25'
+    #       memory: 256M
+
+volumes:
+  airbaltic-logs:
+    driver: local
+
+# Network (optional - for communication with Home Assistant)
+networks:
+  default:
+    name: airbaltic-network

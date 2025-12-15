@@ -1,0 +1,29 @@
+# Air Baltic Hintaseuranta - .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv
+dist/
+build/
+
+# Projekti-spesifinen
+config.json
+price_history.json
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

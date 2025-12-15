@@ -1,0 +1,12 @@
+[project]
+name = "hintaseuranta-airbaltic"
+version = "1.0.0"
+description = "Air Balticin hintaseuranta-ohjelma"
+authors = [{name = "Your Name", email = "your@email.com"}]
+requires-python = ">=3.8"
+dependencies = [
+    "requests>=2.28.0",
+    "flask>=2.3.0",
+    "playwright>=1.40.0",
+    "beautifulsoup4>=4.12.0",
+]
