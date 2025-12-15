@@ -1,0 +1,42 @@
+alias: Air Baltic Price Alert
+description: Sends a notification when Air Baltic price changes or exceeds threshold
+triggers:
+  - entity_id: sensor.airbaltic_ams_oul_price
+    trigger: state
+    not_to: unknown
+actions:
+  - variables:
+      current_price: "{{ states('sensor.airbaltic_ams_oul_price') | float(0) }}"
+      price_min_threshold: 150  # Alert if price below this (EUR) - GOOD DEAL!
+      price_max_threshold: 200  # Alert if price above this (EUR) - EXPENSIVE
+  - if:
+      - condition: template
+        value_template: "{{ current_price < price_min_threshold }}"
+    then:
+      - data:
+          title: "🎉 Great Deal! Air Baltic - AMS → OUL"
+          message: >
+            Price: {{ current_price }} €
+            
+            ✅ Price is below {{ price_min_threshold }}€ - GOOD PRICE!
+        action: notify.notify
+  - if:
+      - condition: template
+        value_template: "{{ current_price > price_max_threshold }}"
+    then:
+      - data:
+          title: "⚠️ Expensive! Air Baltic - AMS → OUL"
+          message: >
+            Price: {{ current_price }} €
+            
+            ❌ Price is above {{ price_max_threshold }}€ - EXPENSIVE!
+        action: notify.notify
+  - if:
+      - condition: template
+        value_template: "{{ (current_price >= price_min_threshold) and (current_price <= price_max_threshold) }}"
+    then:
+      - data:
+          title: "✈️ Air Baltic Price Update"
+          message: "AMS → OUL: {{ current_price }} € (Normal price)"
+        action: notify.notify
+mode: queued
